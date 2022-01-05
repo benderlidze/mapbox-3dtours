@@ -11,10 +11,20 @@
   <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
 
   <style>
+    @font-face {
+      font-family: 'futuraBold';
+      src: url("fonts/Futura Bold.otf") format("opentype");
+    }
+
+    @font-face {
+      font-family: 'futuraBook';
+      src: url("fonts/Futura Book.otf") format("opentype");
+    }
+
     body {
       margin: 0;
       padding: 0;
-      font-family: Helvetica Neue, Arial, Helvetica, sans-serif;
+      font-family: 'futuraBook', Arial, Helvetica, sans-serif;
     }
 
     h3 {
@@ -308,12 +318,16 @@
     .button {
       margin: 10px 0px;
       /* border: 2px solid rgb(3, 0, 175); */
-      border-radius: 5px;
+      border-radius: 25px;
       cursor: pointer;
       text-align: center;
-      background-color: #3074a4;
-      padding: 10px;
-      color: white;
+      background-color: #ffc200;
+      padding: 16px;
+      font-size: 11pt;
+      color: black;
+      width: 150px;
+      font-family: 'futuraBold';
+
     }
 
 
@@ -373,7 +387,65 @@
     }
 
     .popup3d {
-      width: 300px;
+      font-family: 'futuraBook';
+      max-width: 350px !important;
+    }
+
+    .mapboxgl-popup-content {
+      margin: 0px !important;
+      padding: 0px !important;
+      border-radius: 12px !important;
+      background: #9db3be;
+    }
+
+    .container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      align-content: center;
+      flex-wrap: nowrap;
+    }
+
+    .descr {
+      position: absolute;
+      bottom: 0px;
+      color: white;
+      padding: 10px;
+      font-size: 12pt;
+      text-shadow: 0 0 3px black;
+    }
+
+    .title {
+      font-size: 16pt;
+      font-family: 'futuraBold';
+    }
+
+    .mapboxgl-popup-close-button {
+      display: flex;
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      border: 0;
+      /* border-radius: 0 3px 0 0; */
+      cursor: pointer;
+      /* background-color: transparent; */
+      border-radius: 100px;
+      padding: 10px;
+      width: 30px;
+      height: 30px;
+      font-size: 30px;
+      color: #ffffff73;
+      background-color: #00000059;
+      justify-content: center;
+      align-items: center;
+      align-content: center;
+    }
+
+    .mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {
+      align-self: center;
+      border-bottom: none;
+      border-top-color: #9db3be;
     }
   </style>
 </head>
@@ -398,10 +470,10 @@
     const mainData = [];
     const colors = ["#8dd3c7", "#ffffb3", "#bebada", "#fb8072", "#80b1d3", "#fdb462", "#b3de69", "#fccde5", "#d9d9d9", "#bc80bd", "#ccebc5", "#ffed6f"];
 
-    mapboxgl.accessToken = 'pk.eyJ1IjoiZXNtYXAiLCJhIjoiY2pwYmZkM2ExMDM3eDNrbzk3dWJ0ZmFjbyJ9.Dy8uEjj0Y-1HLE6fEZsKdA';
+    mapboxgl.accessToken = 'pk.eyJ1Ijoic2t5c2NvcGVpbWFnZXJ5IiwiYSI6ImNqb25lbTA0NjE3MHAzd2xzcnJ3Y2drd2EifQ.4emSCixiAbYDtOirnnepXQ';
     var map = new mapboxgl.Map({
       container: 'map',
-      style: 'mapbox://styles/mapbox/light-v9',
+      style: 'mapbox://styles/skyscopeimagery/ckw9swn3g2b4b14s00bpp7l99',
       center: { lng: -123.4673801962885, lat: 48.446840741971215 },
       zoom: 9.4,
       logoPosition: 'bottom-right'
@@ -434,9 +506,66 @@
         'data': {
           type: "FeatureCollection",
           features: []
+        },
+        cluster: true,
+        clusterMaxZoom: 14, // Max zoom to cluster points on
+        clusterRadius: 50, //
+
+      });
+
+
+
+      map.addLayer({
+        id: 'clusters',
+        type: 'circle',
+        source: 'pins',
+        filter: ['has', 'point_count'],
+        paint: {
+          'circle-color': [
+            'step',
+            ['get', 'point_count'],
+            '#51bbd6',
+            100,
+            '#f1f075',
+            750,
+            '#f28cb1'
+          ],
+          'circle-radius': [
+            'step',
+            ['get', 'point_count'],
+            20,
+            100,
+            30,
+            750,
+            40
+          ]
         }
       });
 
+      map.addLayer({
+        id: 'cluster-count',
+        type: 'symbol',
+        source: 'pins',
+        filter: ['has', 'point_count'],
+        layout: {
+          'text-field': '{point_count_abbreviated}',
+          'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+          'text-size': 12
+        }
+      });
+
+      // map.addLayer({
+      //   id: 'unclustered-point',
+      //   type: 'circle',
+      //   source: 'earthquakes',
+      //   filter: ['!', ['has', 'point_count']],
+      //   paint: {
+      //     'circle-color': '#11b4da',
+      //     'circle-radius': 4,
+      //     'circle-stroke-width': 1,
+      //     'circle-stroke-color': '#fff'
+      //   }
+      // });
       // map.addLayer({
       //   'id': 'labels',
       //   'type': 'symbol',
@@ -456,9 +585,10 @@
         'source': 'pins', // reference the data source
         'layout': {
           'icon-image': 'icon', // reference the image
-          'icon-size': 0.25,
+          'icon-size': 0.35,
           'icon-allow-overlap': true
-        }
+        },
+        filter: ['!', ['has', 'point_count']],
       });
 
       // map.addLayer({
@@ -496,11 +626,41 @@
         while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
           coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
         }
-        map.setFilter('selected', ["==", ['get', "id"], data['id']]);
+        // map.setFilter('selected', ["==", ['get', "id"], data['id']]);
         new mapboxgl.Popup({ className: "popup3d" })
           .setLngLat(coordinates)
           .setHTML(description)
           .addTo(map);
+
+        map.flyTo({
+          center: coordinates,
+          zoom: 15
+        })
+      });
+
+      map.on('click', 'clusters', (e) => {
+        const features = map.queryRenderedFeatures(e.point, {
+          layers: ['clusters']
+        });
+        const clusterId = features[0].properties.cluster_id;
+        map.getSource('pins').getClusterExpansionZoom(
+          clusterId,
+          (err, zoom) => {
+            if (err) return;
+
+            map.easeTo({
+              center: features[0].geometry.coordinates,
+              zoom: zoom
+            });
+          }
+        );
+      });
+
+      map.on('mouseenter', 'clusters', () => {
+        map.getCanvas().style.cursor = 'pointer';
+      });
+      map.on('mouseleave', 'clusters', () => {
+        map.getCanvas().style.cursor = '';
       });
 
       d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vTt1IpQuJ9oz6xijANnNCHcpoY6bDhGj8FmxkACS2UrbUPFnf86J6HENbUH0elBtoGQous4sixp36Zn/pub?output=csv")
@@ -513,11 +673,21 @@
         })
     })
 
-    function mouseEnter() {
+    function mouseEnter(e) {
+      const id = e.features[0].properties.id
+      console.log(id);
       map.getCanvas().style.cursor = 'pointer';
+      map.setLayoutProperty("pins", "icon-size",
+        [
+          'match',
+          ['get', 'id'],
+          id, 0.5,
+          0.35
+        ])
     }
     function mouseLeave() {
       map.getCanvas().style.cursor = '';
+      map.setLayoutProperty("pins", "icon-size", 0.35)
     }
 
     function showPins(data) {
@@ -545,11 +715,18 @@
 
     function getDescr(data) {
       const description = `
-                    <h1>${data['name']}</h1>
-                    <div><img src="${data['image']}" class="tour-image"></div>
-                    <div>${data['description']}</div>
-                   
-                    <div class="button" link="${data['3dTourLink']}">Enter MetaTour</div>
+
+                    <div class="container">
+                      <div style="position: relative;">
+                          <img src="${data['image']}" class="tour-image" style="width:100%;">
+                          <div class="descr">
+                            <div class="title">${data['name']}</div>
+                            <div>${data['location']}</div>
+                            <div>${data['date captured']}</div>
+                          </div>
+                      </div>
+                      <div class="button" link="${data['3dTourLink']}">Enter MetaTour</div>
+                    </div>
                 `;
       return description;
     }
@@ -559,7 +736,8 @@
       if (e.target.classList.contains("button")) {
         const link = e.target.getAttribute("link")
         console.log(e.target);
-        window.open(link, '_blank');
+        // window.open(link, '_blank');
+        window.open(link, '_self');
       }
     })
   </script>
