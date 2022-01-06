@@ -325,7 +325,7 @@
       background-color: #ffc200;
       padding: 16px;
       font-size: 11pt;
-      color: black;
+      color: #013c58;
       width: 150px;
       font-family: 'futuraBold';
 
@@ -448,6 +448,17 @@
       border-bottom: none;
       border-top-color: #9db3be;
     }
+
+    .mapboxgl-popup-anchor-top .mapboxgl-popup-tip {
+      align-self: center;
+      border-top: none;
+      border-bottom-color: #9db3be;
+    }
+
+    .description {
+      color: #013c58;
+      padding: 5px 15px;
+    }
   </style>
 </head>
 
@@ -475,9 +486,10 @@
     var map = new mapboxgl.Map({
       container: 'map',
       style: 'mapbox://styles/skyscopeimagery/ckw9swn3g2b4b14s00bpp7l99',
-      center: { lng: -123.4673801962885, lat: 48.446840741971215 },
+      center: { lng: -123.4621811747862, lat: 48.51989823534109 },
       zoom: 9.4,
-      logoPosition: 'bottom-right'
+      logoPosition: 'bottom-right',
+      minZoom: 9.4
     });
     // Add zoom and rotation controls to the map.
     const zoom = map.addControl(new mapboxgl.NavigationControl());
@@ -522,15 +534,7 @@
         source: 'pins',
         filter: ['has', 'point_count'],
         paint: {
-          'circle-color': [
-            'step',
-            ['get', 'point_count'],
-            '#51bbd6',
-            100,
-            '#f1f075',
-            750,
-            '#f28cb1'
-          ],
+          'circle-color': '#013c58',
           'circle-radius': [
             'step',
             ['get', 'point_count'],
@@ -552,7 +556,11 @@
           'text-field': '{point_count_abbreviated}',
           'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
           'text-size': 12
+        },
+        paint: {
+          'text-color': '#ffc200'
         }
+
       });
 
       // map.addLayer({
@@ -651,7 +659,7 @@
 
             map.easeTo({
               center: features[0].geometry.coordinates,
-              zoom: zoom
+              zoom: zoom + 1
             });
           }
         );
@@ -678,13 +686,37 @@
       const id = e.features[0].properties.id
       console.log(id);
       map.getCanvas().style.cursor = 'pointer';
-      map.setLayoutProperty("pins", "icon-size",
-        [
-          'match',
-          ['get', 'id'],
-          id, 0.5,
-          0.35
-        ])
+      // map.setLayoutProperty("pins", "icon-size",
+      //   [
+      //     'match',
+      //     ['get', 'id'],
+      //     id, 0.5,
+      //     0.35
+      //   ])
+
+      let i = 0;
+
+      function animateMarker(time) {
+
+        time += 0.02
+        const hoveredSize = 0.35 + time
+
+        map.setLayoutProperty("pins", "icon-size",
+          [
+            'match',
+            ['get', 'id'],
+            id, hoveredSize,
+            0.35
+          ])
+        // Request the next frame of the animation.
+
+        if (hoveredSize < 0.5) requestAnimationFrame(() => animateMarker(time));
+        return;
+      }
+
+      // Start the animation.
+      animateMarker(i);
+
     }
     function mouseLeave() {
       map.getCanvas().style.cursor = '';
@@ -726,6 +758,7 @@
                             <div>${data['date captured']}</div>
                           </div>
                       </div>
+                      <div class="description">${data['description']}</div>
                       <div class="button" link="${data['3dTourLink']}">Enter MetaTour</div>
                     </div>
                 `;
