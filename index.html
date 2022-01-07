@@ -396,7 +396,7 @@
       margin: 0px !important;
       padding: 0px !important;
       border-radius: 12px !important;
-      background: #9db3be;
+      /* background: #9db3be; */
     }
 
     .container {
@@ -443,7 +443,7 @@
       align-content: center;
     }
 
-    .mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {
+    /* .mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {
       align-self: center;
       border-bottom: none;
       border-top-color: #9db3be;
@@ -453,7 +453,7 @@
       align-self: center;
       border-top: none;
       border-bottom-color: #9db3be;
-    }
+    } */
 
     .description {
       color: #013c58;
@@ -489,7 +489,9 @@
       center: { lng: -123.4621811747862, lat: 48.51989823534109 },
       zoom: 9.4,
       logoPosition: 'bottom-right',
-      minZoom: 9.4
+      minZoom: 9.4,
+
+      maxBounds: [[-123.95428502700423, 48.31304593662415], [-122.97007732256779, 48.73524236269387]]
     });
     // Add zoom and rotation controls to the map.
     const zoom = map.addControl(new mapboxgl.NavigationControl());
