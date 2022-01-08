@@ -471,17 +471,21 @@
   </div>
 
   <div id="map"></div>
-  <div id="logo">
+  <div id="logo" style="display: none;">
     <img src="" alt="" style="opacity: 0.5;width:150px;">
+    <div id="payButton"></div>
   </div>
 
   <script>
     const GEO = [];
+    const payButton = document.getElementById("payButton")
     const leftBottom = document.getElementById("leftBottom")
     const filters = document.getElementById("filters")
     const info = document.getElementById("info")
     const mainData = [];
     const colors = ["#8dd3c7", "#ffffb3", "#bebada", "#fb8072", "#80b1d3", "#fdb462", "#b3de69", "#fccde5", "#d9d9d9", "#bc80bd", "#ccebc5", "#ffed6f"];
+
+
 
     mapboxgl.accessToken = 'pk.eyJ1Ijoic2t5c2NvcGVpbWFnZXJ5IiwiYSI6ImNqb25lbTA0NjE3MHAzd2xzcnJ3Y2drd2EifQ.4emSCixiAbYDtOirnnepXQ';
     var map = new mapboxgl.Map({
@@ -791,24 +795,8 @@
 
 
     function getDescr(data) {
-      const payButton = `
-        <div class="money-button button"
-          link="${data['3dTourLink']}"
-          data-to="38454"
-          data-amount=".10"
-          data-currency="USD"
-          data-label="Enter MetaTour" 
-          data-client-identifier="f7ae87245946d3030f208575afe2c439"
-          data-button-id="1641597874999"
-          data-button-data="{}"
-          data-type="buy">
-          Enter MetaTour
-        </div>
 
-      
-      `
       const description = `
-
                     <div class="container">
                       <div style="position: relative;">
                           <img src="${data['image']}" class="tour-image" style="width:100%;">
@@ -819,7 +807,7 @@
                           </div>
                       </div>
                       <div class="description">${data['description']}</div>
-                      ${payButton}
+                      ${payButton.innerHTML}
                       </div>
                       `;
       return description;
@@ -835,6 +823,18 @@
         window.open(link, '_self');
       }
     })
+
+    moneyButton.render(payButton, {
+      to: "38454",
+      amount: ".10",
+      currency: "USD",
+      label: "Enter MetaTour",
+      clientIdentifier: "f7ae87245946d3030f208575afe2c439",
+      buttonId: "1641597874999",
+      buttonData: "{}",
+      type: "buy",
+    })
+
   </script>
 </body>
 
