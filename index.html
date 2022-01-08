@@ -9,7 +9,7 @@
   <link href="https://api.mapbox.com/mapbox-gl-js/v2.5.0/mapbox-gl.css" rel="stylesheet" />
   <script src="https://d3js.org/d3.v5.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
-
+  <script src="https://www.moneybutton.com/moneybutton.js"></script>
   <style>
     @font-face {
       font-family: 'futuraBold';
@@ -791,6 +791,22 @@
 
 
     function getDescr(data) {
+      const payButton = `
+        <div class="money-button button"
+          link="${data['3dTourLink']}"
+          data-to="38454"
+          data-amount=".10"
+          data-currency="USD"
+          data-label="Enter MetaTour" 
+          data-client-identifier="f7ae87245946d3030f208575afe2c439"
+          data-button-id="1641597874999"
+          data-button-data="{}"
+          data-type="buy">
+          Enter MetaTour
+        </div>
+
+      
+      `
       const description = `
 
                     <div class="container">
@@ -803,10 +819,11 @@
                           </div>
                       </div>
                       <div class="description">${data['description']}</div>
-                      <div class="button" link="${data['3dTourLink']}">Enter MetaTour</div>
-                    </div>
-                `;
+                      ${payButton}
+                      </div>
+                      `;
       return description;
+      // <div class="button" link="${data['3dTourLink']}">Enter MetaTour</div>
     }
 
     document.addEventListener("click", e => {
