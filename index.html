@@ -485,8 +485,6 @@
     const mainData = [];
     const colors = ["#8dd3c7", "#ffffb3", "#bebada", "#fb8072", "#80b1d3", "#fdb462", "#b3de69", "#fccde5", "#d9d9d9", "#bc80bd", "#ccebc5", "#ffed6f"];
 
-
-
     mapboxgl.accessToken = 'pk.eyJ1Ijoic2t5c2NvcGVpbWFnZXJ5IiwiYSI6ImNqb25lbTA0NjE3MHAzd2xzcnJ3Y2drd2EifQ.4emSCixiAbYDtOirnnepXQ';
     var map = new mapboxgl.Map({
       container: 'map',
@@ -689,6 +687,23 @@
           .setHTML(description)
           .addTo(map);
 
+        setTimeout(() => {
+          const div = document.getElementById('pay-button')
+          moneyButton.render(div, {
+            to: "ryan@moneybutton.com",
+            amount: "1",
+            currency: "USD",
+            label: "Wait...",
+            clientIdentifier: "some public client identifier",
+            buttonId: "234325",
+            buttonData: "{}",
+            type: "tip",
+            onPayment: function (arg) { console.log('onPayment', arg) },
+            onError: function (arg) { console.log('onError', arg) }
+          })
+        }, 1000);
+
+
         map.flyTo({
           center: coordinates,
           zoom: 15
@@ -807,7 +822,7 @@
                           </div>
                       </div>
                       <div class="description">${data['description']}</div>
-                      ${payButton.innerHTML}
+                      <div id="pay-button"></div>
                       </div>
                       `;
       return description;
@@ -822,17 +837,6 @@
         // window.open(link, '_blank');
         window.open(link, '_self');
       }
-    })
-
-    moneyButton.render(payButton, {
-      to: "38454",
-      amount: ".10",
-      currency: "USD",
-      label: "Enter MetaTour",
-      clientIdentifier: "f7ae87245946d3030f208575afe2c439",
-      buttonId: "1641597874999",
-      buttonData: "{}",
-      type: "buy",
     })
 
   </script>
