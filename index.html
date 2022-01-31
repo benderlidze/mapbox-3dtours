@@ -836,7 +836,16 @@
         const link = e.target.getAttribute("link")
         console.log(e.target);
         // window.open(link, '_blank');
-        window.open(link, '_self');
+        // window.open(link, '_self');
+
+        top.window.location.href = link
+        // try {
+        //   top.window.location.href = link
+        // }
+        // catch (e) {
+        //   window.location.href = link
+        // }
+
       }
     })
 
